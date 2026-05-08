@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '../utils/supabase/client'
 import toast from 'react-hot-toast'
-
+import { RealtimeChannel } from '@supabase/supabase-js'
 export type Bookmark = {
   id: string
   title: string
@@ -18,26 +18,33 @@ export function useBookmarks(initialBookmarks: Bookmark[], userId: string) {
   const supabase = createClient()
 
   // --- 1. REALTIME LISTENER (For Tab B) ---
-  useEffect(() => {
+// --- 1. REALTIME LISTENER (For Tab B) ---
+useEffect(() => {
+  let channel: RealtimeChannel;
 
-    const channel = supabase
-      .channel('realtime-bookmarks')
+  const setupRealtime = async () => {
+    // 1. Force the Supabase client to load the auth token first!
+    await supabase.auth.getSession();
+    
+    console.log("📡 Session loaded. Subscribing to Realtime for user:", userId)
+
+    // 2. Now open the websocket securely
+    channel = supabase
+      .channel(`realtime-bookmarks-${userId}`) // Give it a unique name
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'bookmarks',
-          // filter: `user_id=eq.${userId}`,
         },
-        (payload) => {          
+        (payload) => {
+          console.log("🚀 REALTIME EVENT RECEIVED:", payload)
+          
           if (payload.eventType === 'INSERT') {
             const newBookmark = payload.new as Bookmark
             setBookmarks((prev) => {
-             //prevent duplicate bookmarks
-              if (prev.some((b) => b.id === newBookmark.id)) {
-                return prev
-              }
+              if (prev.some((b) => b.id === newBookmark.id)) return prev
               return [newBookmark, ...prev]
             })
           }
@@ -48,11 +55,14 @@ export function useBookmarks(initialBookmarks: Bookmark[], userId: string) {
         }
       )
       .subscribe()
+  }
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [supabase, userId])
+  setupRealtime();
+
+  return () => {
+    if (channel) supabase.removeChannel(channel)
+  }
+}, [supabase, userId])
 
   // --- 2. ADD LOGIC (Instant for Tab A) ---
   const addBookmark = async (e: React.FormEvent) => {
