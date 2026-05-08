@@ -19,7 +19,6 @@ export function useBookmarks(initialBookmarks: Bookmark[], userId: string) {
 
   // --- 1. REALTIME LISTENER (For Tab B) ---
   useEffect(() => {
-    console.log("📡 Subscribing to Realtime for user:", userId)
 
     const channel = supabase
       .channel('realtime-bookmarks')
@@ -31,16 +30,12 @@ export function useBookmarks(initialBookmarks: Bookmark[], userId: string) {
           table: 'bookmarks',
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
-          console.log("🚀 REALTIME EVENT RECEIVED IN THIS TAB:", payload)
-          
+        (payload) => {          
           if (payload.eventType === 'INSERT') {
             const newBookmark = payload.new as Bookmark
             setBookmarks((prev) => {
-              // Duplicate check: If Tab A already added this locally, ignore it.
-              // If this is Tab B, it won't exist yet, so add it!
+             //prevent duplicate bookmarks
               if (prev.some((b) => b.id === newBookmark.id)) {
-                console.log("Duplicate prevented.")
                 return prev
               }
               return [newBookmark, ...prev]
