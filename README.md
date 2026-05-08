@@ -86,7 +86,7 @@ Navigate to `http://localhost:3000`.
 
 * **Problem 1: Supabase PGRST205 Schema Cache Error**
   * *Issue:* Initallly supbase google oauth was returing error that no API Key was passed in request header.
-  * *Issue:* After one debugging finally found the culprit, it was the supabase URL from .env, it was "https://projectID.supabase.co/auth/v1" copied from the supabse dashboard but it must be only "https://jyidkzufmmtrgmsvxbax.supabase.co".
+  * *Issue:* After one debugging finally found the culprit, it was the supabase URL from .env, it was "https://projectID.supabase.co/auth/v1" copied from the supabse dashboard but it must be only "https://projectid.supabase.co".
   * *Issue:* After initially setting up the database, API requests returned a schema cache error because PostgREST didn't recognize the new table.
   * *Solution:* I resolved this by running the SQL command `NOTIFY pgrst, 'reload schema'` to force the database engine to refresh its cache.
 * **Problem 2: Realtime Deletes Not Broadcasting Old Data**
