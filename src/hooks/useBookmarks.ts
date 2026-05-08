@@ -28,7 +28,7 @@ export function useBookmarks(initialBookmarks: Bookmark[], userId: string) {
           event: '*',
           schema: 'public',
           table: 'bookmarks',
-          filter: `user_id=eq.${userId}`,
+          // filter: `user_id=eq.${userId}`,
         },
         (payload) => {          
           if (payload.eventType === 'INSERT') {
