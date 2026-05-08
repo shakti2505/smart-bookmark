@@ -9,7 +9,7 @@ Marked is a premium, full-stack bookmarking application built with Next.js and S
 * **Auto-Title Fetching (Bonus Feature):** Paste a URL, and the app automatically scrapes the website's title via a custom serverless API route.
 * **Optimistic UI:** Instantaneous UI updates when adding or deleting bookmarks, providing a snappy, lag-free user experience.
 * **Premium UI/UX:** Built with Tailwind CSS, featuring a split-pane layout, glassmorphism, ambient background glows, and fully responsive design.
-* **Enterprise-Grade Security:** Row Level Security (RLS) ensures users can only access and modify their own data.
+* **Enterprise-Grade Security:** Row Level Security (RLS) ensures users can only access and modify their own data
 
 ## Tech Stack
 
